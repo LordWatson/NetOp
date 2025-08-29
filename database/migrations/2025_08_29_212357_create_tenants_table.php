@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tenants', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
+            $table->string('domain')->unique();
+            $table->string('database')->unique();
+            $table->json('data')->nullable();
             $table->timestamps();
+
+            $table->index('domain');
         });
     }
 

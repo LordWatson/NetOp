@@ -12,13 +12,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('organization_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['admin', 'operator', 'analyst', 'viewer'])->default('operator');
+            $table->json('permissions')->nullable();
+            $table->string('job_title')->nullable();
+            $table->string('phone', 20)->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamp('last_login')->nullable();
+            $table->string('timezone', 50)->default('UTC');
+            $table->json('preferences')->nullable();
             $table->rememberToken();
             $table->timestamps();
+
+            $table->index(['organization_id', 'is_active']);
+            $table->index(['email', 'is_active']);
+            $table->index('role');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
